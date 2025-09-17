@@ -2,15 +2,13 @@ import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import validate from '../middleware/validateMiddleware';
+import { signupSchema, loginSchema } from '../schemas';
 
 const router = Router();
 
-router.post('/signup', async (req: Request, res: Response) => {
+router.post('/signup', validate(signupSchema), async (req: Request, res: Response) => {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
-    }
 
     try {
         const userCheck = await query('SELECT * FROM users WHERE email = $1', [email]);
@@ -33,12 +31,8 @@ router.post('/signup', async (req: Request, res: Response) => {
     }
 });
 
-router.post('/login', async (req: Request, res: Response) => {
+router.post('/login', validate(loginSchema), async (req: Request, res: Response) => {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required.' });
-    }
 
     try {
         const userResult = await query('SELECT * FROM users WHERE email = $1', [email]);

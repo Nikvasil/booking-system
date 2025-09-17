@@ -1,18 +1,18 @@
+/// <reference path="../types/express.d.ts" />
+
 import { Router, Request, Response } from 'express';
 import { query } from '../db';
 import authMiddleware from '../middleware/authMiddleware';
+import validate from '../middleware/validateMiddleware';
+import { createBookingSchema } from '../schemas';
 
 const router = Router();
 
 router.use(authMiddleware);
 
-router.post('/', async (req: Request, res: Response) => {
+router.post('/', validate(createBookingSchema), async (req: Request, res: Response) => {
     const { title, roomId, startTime, endTime } = req.body;
     const userId = req.user?.id;
-
-    if (!title || !roomId || !startTime || !endTime) {
-        return res.status(400).json({ message: 'All fields are required.' });
-    }
 
     try {
         const newBooking = await query(
