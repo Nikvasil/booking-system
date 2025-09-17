@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, FormEvent, FC } from 'react';
+import { useState, useEffect, FormEvent, FC } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useApi } from '../hooks/useApi';
 
@@ -19,12 +19,18 @@ const BookingForm: FC<BookingFormProps> = ({ rooms, onBookingCreated }) => {
     const { apiFetch, error, setError } = useApi(token);
 
     const [title, setTitle] = useState('');
-    const [roomId, setRoomId] = useState(rooms.length > 0 ? rooms[0].id.toString() : '');
+    const [roomId, setRoomId] = useState('');
 
     const [startTime, setStartTime] = useState(new Date().toISOString().slice(0, 16));
     const [endTime, setEndTime] = useState(
         new Date(new Date().getTime() + 60 * 60 * 1000).toISOString().slice(0, 16)
     );
+
+    useEffect(() => {
+        if (rooms.length > 0 && !roomId) {
+            setRoomId(rooms[0].id.toString());
+        }
+    }, [rooms]);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
