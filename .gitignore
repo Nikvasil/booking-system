@@ -1,0 +1,12 @@
+/api/node_modules
+/client/node_modules
+
+/client/.next
+
+/api/.env
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+.vscode
