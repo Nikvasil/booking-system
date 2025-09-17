@@ -7,6 +7,7 @@ const API_URL = 'http://localhost:3001/api';
 interface AuthContextType {
     token: string | null;
     login: (email: string, password: string) => Promise<void>;
+    signup: (email: string, password: string) => Promise<void>;
     logout: () => void;
     isLoading: boolean;
 }
@@ -39,16 +40,29 @@ export const AuthProvider: FC<{ children: ReactNode }> = ({ children }) => {
         setToken(data.token);
     };
 
+    const signup = async (email: string, password: string) => {
+        const res = await fetch(`${API_URL}/auth/signup`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+        });
+        const data = await res.json();
+        if (!res.ok) {
+            const errorMessage = data.errors ? data.errors[0].message : data.message;
+            throw new Error(errorMessage || 'Signup failed');
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem('authToken');
         setToken(null);
     };
 
     return (
-        <AuthContext.Provider value={{ token, login, logout, isLoading }}>
-    {children}
-    </AuthContext.Provider>
-);
+        <AuthContext.Provider value={{ token, login, signup, logout, isLoading }}>
+            {children}
+        </AuthContext.Provider>
+    );
 };
 
 export const useAuth = (): AuthContextType => {

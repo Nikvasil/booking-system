@@ -1,5 +1,5 @@
-import './db';
 import 'dotenv/config';
+import './db';
 import express, { Request, Response } from 'express';
 import authRouter from './routes/auth';
 import bookingsRouter from './routes/bookings';
